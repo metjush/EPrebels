@@ -77,6 +77,19 @@ fractions_plot <- ggplot(byfraction, aes(variable, value,fill=as.factor(variable
 #plots by country ggplot
 bycountry <- melt(c_means, id.vars='countries')
 c_plot <- ggplot(bycountry, aes(variable, value,fill=as.factor(variable)))+geom_bar(position="dodge", stat="identity")+facet_wrap(~countries, nrow=2)
+##ordered fraction plot (only group loyalty)
+#order the original dataset
+ord_f <- fraction_means[ order(fraction_means[,2]),  ]
+#take only fraction loyalty means
+ord_f <- ord_f[ c(1:2) ]
+#make the fraction variable ordered
+ord_f$fractions <- factor(ord_f$fractions, levels=ord_f$fractions, ordered=TRUE)
+ord_f_plot <- ggplot(data=ord_f, aes(x=fractions, y=fractions_group_means)) + geom_bar(stat="identity", position="dodge")
+##ordered country plot
+ord_c <- c_means[ order(c_means[,2]),  ]
+ord_c <- ord_c[ c(1:2) ]
+ord_c$countries <- factor(ord_c$countries, levels=ord_c$countries, ordered=TRUE)
+ord_c_plot <- ggplot(data=ord_c, aes(x=countries, y=c_group_means)) + geom_bar(stat="identity", position="dodge")
 
 ##regressions
 #ALDE is the baseline for fraction regressions
@@ -102,3 +115,8 @@ f_on_c <- lm(data=clean_data, loyal_group ~ Austria + Belgium + Bulgaria + Croat
 n_on_c <- lm(data=clean_data, loyal_national ~ Austria + Belgium + Bulgaria + Croatia + Cyprus + `Czech Republic` + Denmark + Estonia + Finland + France + Greece + Hungary + Ireland + Italy + Latvia + Lithuania + Luxembourg + Malta + Netherlands + Poland + Portugal + Romania + Slovakia + Slovenia + Spain + Sweden + `United Kingdom`)
 #participation on country
 p_on_c <- lm(data=clean_data, participation ~ Austria + Belgium + Bulgaria + Croatia + Cyprus + `Czech Republic` + Denmark + Estonia + Finland + France + Greece + Hungary + Ireland + Italy + Latvia + Lithuania + Luxembourg + Malta + Netherlands + Poland + Portugal + Romania + Slovakia + Slovenia + Spain + Sweden + `United Kingdom`)
+
+#interactions
+efd_uk_f <- lm(data=clean_data, loyal_group ~ EFD + `United Kingdom` + EFD*`United Kingdom`)
+efd_uk_n <- lm(data=clean_data, loyal_national ~ EFD + `United Kingdom` + EFD*`United Kingdom`)
+efd_uk_p <- lm(data=clean_data, participation ~ EFD + `United Kingdom` + EFD*`United Kingdom`)
